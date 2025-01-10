@@ -26,6 +26,10 @@ test-timeout = 300          # In seconds (5 minutes)
 name = "should_panic"
 harness = false
 
+[[test]]
+name = "stack_overflow"
+harness = false
+
 [profile.dev]
 panic = "abort"
 

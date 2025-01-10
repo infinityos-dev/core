@@ -7,11 +7,13 @@
 
 use core::panic::PanicInfo;
 
+pub mod gdt;
 pub mod interrupts;
 pub mod serial;
 pub mod vga_buffer;
 
 pub fn init() {
+    gdt::init();
     interrupts::init_idt();
 }
 
