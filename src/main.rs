@@ -9,7 +9,16 @@ use infinity_os::println;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("Hello World{}", "!");
+    println!("  _____        __ _       _ _          ____   _____ ");
+    println!(" |_   _|      / _(_)     (_) |        / __ \\ / ____|");
+    println!("   | |  _ __ | |_ _ _ __  _| |_ _   _| |  | | (___  ");
+    println!("   | | | '_ \\|  _| | '_ \\| | __| | | | |  | |\\___ \\ ");
+    println!("  _| |_| | | | | | | | | | | |_| |_| | |__| |____) |");
+    println!(" |_____|_| |_|_| |_|_| |_|_|\\__|\\__, |\\____/|_____/ ");
+    println!("                                 __/ |              ");
+    println!("                                |___/               ");
+
+    infinity_os::init();
 
     #[cfg(test)]
     test_main();
