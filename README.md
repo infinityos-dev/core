@@ -61,4 +61,7 @@ Where `sdX` is the device name of your USB stick. **Be careful** to choose the c
 
 ## Testing
 
+>[!IMPORTANT]
+>You will need QEMU to test properly
+
 To run the unit and integration tests, execute `cargo test`.
