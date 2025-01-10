@@ -1,5 +1,8 @@
 # **InfinityOS**
 
+>[!IMPORTANT]
+>InfinityOS is still in very early development, is being developed on and off, and is currently not ready for normal usage.
+
 Welcome to **InfinityOS**, an experimental operating system written in Rust. This project explores the boundaries of Rust in systems programming and serves as a platform for learning and innovation.
 
 ## **Features**
