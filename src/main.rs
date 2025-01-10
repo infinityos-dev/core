@@ -9,16 +9,8 @@ use infinity_os::println;
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    println!("  _____        __ _       _ _          ____   _____ ");
-    println!(" |_   _|      / _(_)     (_) |        / __ \\ / ____|");
-    println!("   | |  _ __ | |_ _ _ __  _| |_ _   _| |  | | (___  ");
-    println!("   | | | '_ \\|  _| | '_ \\| | __| | | | |  | |\\___ \\ ");
-    println!("  _| |_| | | | | | | | | | | |_| |_| | |__| |____) |");
-    println!(" |_____|_| |_|_| |_|_| |_|_|\\__|\\__, |\\____/|_____/ ");
-    println!("                                 __/ |              ");
-    println!("                                |___/               ");
-
     infinity_os::init();
+    print_logo();
 
     #[cfg(test)]
     test_main();
@@ -37,4 +29,17 @@ fn panic(info: &PanicInfo) -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     infinity_os::test_panic_handler(info)
+}
+
+fn print_logo() {
+    println!("");
+    println!("  _____        __ _       _ _          ____   _____ ");
+    println!(" |_   _|      / _(_)     (_) |        / __ \\ / ____|");
+    println!("   | |  _ __ | |_ _ _ __  _| |_ _   _| |  | | (___  ");
+    println!("   | | | '_ \\|  _| | '_ \\| | __| | | | |  | |\\___ \\ ");
+    println!("  _| |_| | | | | | | | | | | |_| |_| | |__| |____) |");
+    println!(" |_____|_| |_|_| |_|_| |_|_|\\__|\\__, |\\____/|_____/ ");
+    println!("                                 __/ |              ");
+    println!("                                |___/               ");
+    println!("");
 }
