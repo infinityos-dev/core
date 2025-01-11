@@ -7,14 +7,13 @@
 
 use core::panic::PanicInfo;
 
-pub mod gdt;
-pub mod interrupts;
+pub mod arch;
 pub mod serial;
 pub mod vga_buffer;
 
 pub fn init() {
-    gdt::init();
-    interrupts::init_idt();
+    arch::gdt::init();
+    arch::interrupts::init_idt();
 }
 
 pub trait Testable {
