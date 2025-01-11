@@ -61,10 +61,10 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    use lazy_static::lazy_static;
     use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
     use spin::Mutex;
     use x86_64::instructions::port::Port;
+    use lazy_static::lazy_static; // Make sure to import lazy_static
 
     lazy_static! {
         static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
@@ -82,13 +82,11 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
         if let Some(key) = keyboard.process_keyevent(key_event) {
             match key {
-                DecodedKey::Unicode(character) => print!(
-                    "{}",
-                    match character {
-                        ' ' => ' ', // Print space for spacebar
-                        _ => character,
-                    }
-                ),
+                DecodedKey::Unicode(character) => match character {
+                    '\t' => print!("    "), // Print four spaces for tab
+                    ' ' => print!(" "),     // Print space for spacebar
+                    _  => print!("{}", character), // Print other characters as is
+                },
                 DecodedKey::RawKey(key) => {
                     match key {
                         pc_keyboard::KeyCode::LControl |
