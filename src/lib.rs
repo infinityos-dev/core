@@ -12,8 +12,7 @@ pub mod serial;
 pub mod vga_buffer;
 
 pub fn init() {
-    arch::gdt::init();
-    arch::interrupts::init_idt();
+    arch::init();
 }
 
 pub trait Testable {
