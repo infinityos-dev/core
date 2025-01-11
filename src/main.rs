@@ -5,6 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
+use infinity_os::print;
 use infinity_os::println;
 
 #[no_mangle]
@@ -15,14 +16,17 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    loop {}
+    println!("Welcome to Infinity OS!");
+    print!("> ");
+
+    infinity_os::arch::interrupts::hlt_loop();
 }
 
 #[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     println!("{}", info);
-    loop {}
+    infinity_os::arch::interrupts::hlt_loop();
 }
 
 #[cfg(test)]

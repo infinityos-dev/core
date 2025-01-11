@@ -6,14 +6,14 @@
 #![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
+use crate::arch::interrupts;
 
 pub mod arch;
 pub mod serial;
 pub mod vga_buffer;
 
 pub fn init() {
-    arch::gdt::init();
-    arch::interrupts::init_idt();
+    arch::init();
 }
 
 pub trait Testable {
@@ -59,20 +59,20 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("[failed]\n");
     serial_println!("Error: {}\n", info);
     exit_qemu(QemuExitCode::Failed);
-    loop {}
+    interrupts::hlt_loop();
 }
 
-// Entry point for `cargo test`
+/// Entry point for `cargo test`
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     init();
     test_main();
-    loop {}
+    interrupts::hlt_loop();
 }
 
 #[cfg(test)]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    test_panic_handler(info)
+    test_panic_handler(info);
 }
