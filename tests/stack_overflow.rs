@@ -11,7 +11,7 @@ use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
 pub extern "C" fn _start() -> ! {
     serial_print!("stack_overflow::stack_overflow...\t");
 
-    infinity_os::gdt::init();
+    infinity_os::arch::gdt::init();
     init_test_idt();
 
     // trigger a stack overflow
@@ -32,7 +32,7 @@ lazy_static! {
         unsafe {
             idt.double_fault
                 .set_handler_fn(test_double_fault_handler)
-                .set_stack_index(infinity_os::gdt::DOUBLE_FAULT_IST_INDEX);
+                .set_stack_index(infinity_os::arch::gdt::DOUBLE_FAULT_IST_INDEX);
         }
 
         idt
