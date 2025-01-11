@@ -17,10 +17,7 @@ pub extern "C" fn _start() -> ! {
 
     println!("Welcome to Infinity OS!");
 
-    loop {
-        use infinity_os::print;
-        print!("-");
-    }
+    loop {}
 }
 
 #[cfg(not(test))]
