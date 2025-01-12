@@ -12,6 +12,11 @@ use infinity_os::println;
 pub extern "C" fn _start() -> ! {
     infinity_os::init();
 
+    use x86_64::registers::control::Cr3;
+
+    let (level_4_page_table, _) = Cr3::read();
+    println!("Level 4 page table at: {:?}", level_4_page_table.start_address());
+
     #[cfg(test)]
     test_main();
 
@@ -32,17 +37,4 @@ fn panic(info: &PanicInfo) -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     infinity_os::test_panic_handler(info)
-}
-
-fn print_logo() {
-    println!("");
-    println!("  _____        __ _       _ _          ____   _____ ");
-    println!(" |_   _|      / _(_)     (_) |        / __ \\ / ____|");
-    println!("   | |  _ __ | |_ _ _ __  _| |_ _   _| |  | | (___  ");
-    println!("   | | | '_ \\|  _| | '_ \\| | __| | | | |  | |\\___ \\ ");
-    println!("  _| |_| | | | | | | | | | | |_| |_| | |__| |____) |");
-    println!(" |_____|_| |_|_| |_|_| |_|_|\\__|\\__, |\\____/|_____/ ");
-    println!("                                 __/ |              ");
-    println!("                                |___/               ");
-    println!("");
 }
