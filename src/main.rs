@@ -11,7 +11,6 @@ use infinity_os::println;
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
     infinity_os::init();
-    print_logo();
 
     #[cfg(test)]
     test_main();
