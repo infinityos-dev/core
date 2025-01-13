@@ -4,11 +4,13 @@
 #![test_runner(infinity_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use infinity_os::{print, shell};
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+
+pub fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     infinity_os::init();
 
     shell::print_banner();
