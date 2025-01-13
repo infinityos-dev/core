@@ -5,6 +5,8 @@
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use core::panic::PanicInfo;
+
 pub mod gdt;
 pub mod interrupts;
 pub mod layouts;
@@ -18,6 +20,21 @@ pub fn init() {
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
+}
+
+pub trait Testable {
+    fn run(&self) -> ();
+}
+
+impl<T> Testable for T
+where
+    T: Fn(),
+{
+    fn run(&self) {
+        serial_print!("{}...\t", core::any::type_name::<T>());
+        self();
+        serial_println!("[ok]");
+    }
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -42,15 +59,22 @@ pub fn hlt_loop() -> ! {
     }
 }
 
-#[cfg(test)]
-fn test_runner(tests: &[&dyn Fn()]) {
+pub fn test_runner(tests: &[&dyn Testable]) {
     serial_println!("Running {} tests", tests.len());
     for test in tests {
-        test();
+        test.run();
     }
     exit_qemu(QemuExitCode::Success);
 }
 
+pub fn test_panic_handler(info: &PanicInfo) -> ! {
+    serial_println!("[failed]\n");
+    serial_println!("Error: {}\n", info);
+    exit_qemu(QemuExitCode::Failed);
+    hlt_loop();
+}
+
+/// Entry point for `cargo test`
 #[cfg(test)]
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
@@ -61,9 +85,6 @@ pub extern "C" fn _start() -> ! {
 
 #[cfg(test)]
 #[panic_handler]
-fn panic(info: &core::panic::PanicInfo) -> ! {
-    serial_println!("[failed]\n");
-    serial_println!("Error: {}\n", info);
-    exit_qemu(QemuExitCode::Failed);
-    hlt_loop();
+fn panic(info: &PanicInfo) -> ! {
+    test_panic_handler(info);
 }
