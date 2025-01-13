@@ -9,8 +9,7 @@ use core::panic::PanicInfo;
 use crate::arch::interrupts;
 
 pub mod arch;
-pub mod serial;
-pub mod vga_buffer;
+pub mod kernel;
 
 pub fn init() {
     arch::init();
