@@ -5,18 +5,15 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use infinity_os::print;
+use infinity_os::{print, shell};
 
 #[no_mangle]
 pub extern "C" fn _start() -> ! {
-    print!("********************************************************************************\n");
-    print!("*                        Welcome to Infinity OS v0.1.0                         *\n");
-    print!("********************************************************************************\n");
-    print!("\n");
-
     infinity_os::init();
 
-    print!("> ");
+    shell::print_banner();
+    shell::print_prompt();
+
     infinity_os::hlt_loop();
 }
 

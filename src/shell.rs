@@ -7,6 +7,24 @@ lazy_static! {
     pub static ref STDIN: Mutex<String> = Mutex::new(String::new());
 }
 
+pub fn print_banner() {
+    print!("                     ____\n");
+    print!("                    /|o  |            ()()\n");
+    print!("                   /o|  o|           (o.o )\n");
+    print!("+---------------- /o_|_o_|------------> ^ <------------------------------------+\n");
+    print!("|                                                                              |\n");
+    print!("|                                 Infinity OS                                  |\n");
+    print!("|                                                                              |\n");
+    print!("|                         Lightweight Operating System                         |\n");
+    print!("|                                                                              |\n");
+    print!("+------------------------------------------------------------------------------+\n");
+    print!("\n");
+}
+
+pub fn print_prompt() {
+    print!("> ");
+}
+
 pub fn key_handle(c: char) {
     let mut stdin = STDIN.lock();
     if c == '\n' {
@@ -16,14 +34,15 @@ pub fn key_handle(c: char) {
                 print!("Lightweight easy to use operating system made to limit e-waste\n");
             },
             "uptime" => {
-                print!("{:.6} seconds\n", clock::uptime());
+                print!("{:.0} seconds\n", clock::uptime());
             },
             _ => {
                 print!("?");
             }
         }
         stdin.clear();
-        print!("\n> ");
+        print!("\n");
+        print_prompt();
     } else {
         if c == 0x08 as char {
             if stdin.len() > 0 {
