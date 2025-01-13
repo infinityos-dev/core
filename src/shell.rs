@@ -18,11 +18,10 @@ pub fn print_banner() {
     print!("|                         Lightweight Operating System                         |\n");
     print!("|                                                                              |\n");
     print!("+------------------------------------------------------------------------------+\n");
-    print!("\n");
 }
 
 pub fn print_prompt() {
-    print!("> ");
+    print!("\n> ");
 }
 
 pub fn key_handle(c: char) {
@@ -31,13 +30,16 @@ pub fn key_handle(c: char) {
         print!("\n");
         match stdin.as_str() {
             "help" => {
-                print!("Lightweight easy to use operating system made to limit e-waste\n");
+                print!("Lightweight easy to use operating system made to limit e-waste");
+            },
+            "version" => {
+                print!("Infinity OS v{}", env!("CARGO_PKG_VERSION"));
             },
             "uptime" => {
-                print!("{:.0} seconds\n", clock::uptime());
+                print!("{:.0} seconds", clock::uptime());
             },
             _ => {
-                print!("?");
+                print!("Unknown command: {}", stdin.as_str());
             }
         }
         stdin.clear();
