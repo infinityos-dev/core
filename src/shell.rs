@@ -1,4 +1,4 @@
-use crate::print;
+use crate::{clock, print};
 use crate::string::String;
 use lazy_static::lazy_static;
 use spin::Mutex;
@@ -13,8 +13,11 @@ pub fn key_handle(c: char) {
         print!("\n");
         match stdin.as_str() {
             "help" => {
-                print!("Lightweight easy to use operating system made to limit e-waste");
-            }
+                print!("Lightweight easy to use operating system made to limit e-waste\n");
+            },
+            "uptime" => {
+                print!("{:.6} seconds\n", clock::uptime());
+            },
             _ => {
                 print!("?");
             }
