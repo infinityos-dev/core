@@ -1,19 +1,20 @@
 #![no_std]
+#![feature(abi_x86_interrupt)]
 #![cfg_attr(test, no_main)]
 #![feature(custom_test_frameworks)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
-#![feature(abi_x86_interrupt)]
 
 use core::panic::PanicInfo;
-use crate::arch::interrupts;
 
-pub mod arch;
-pub mod serial;
-pub mod vga_buffer;
+pub mod kernel;
+pub mod user;
 
 pub fn init() {
-    arch::init();
+    kernel::gdt::init();
+    kernel::interrupts::init_idt();
+    unsafe { kernel::interrupts::PICS.lock().initialize() };
+    x86_64::instructions::interrupts::enable();
 }
 
 pub trait Testable {
@@ -25,9 +26,9 @@ where
     T: Fn(),
 {
     fn run(&self) {
-        serial_print!("{}...\t", core::any::type_name::<T>());
+        print!("{}...\t", core::any::type_name::<T>());
         self();
-        serial_println!("[ok]");
+        print!("[ok]\n");
     }
 }
 
@@ -47,8 +48,14 @@ pub fn exit_qemu(exit_code: QemuExitCode) {
     }
 }
 
+pub fn hlt_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
+}
+
 pub fn test_runner(tests: &[&dyn Testable]) {
-    serial_println!("Running {} tests", tests.len());
+    print!("Running {} tests\n", tests.len());
     for test in tests {
         test.run();
     }
@@ -56,10 +63,10 @@ pub fn test_runner(tests: &[&dyn Testable]) {
 }
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
-    serial_println!("[failed]\n");
-    serial_println!("Error: {}\n", info);
+    print!("[failed]\n");
+    print!("Error: {}\n", info);
     exit_qemu(QemuExitCode::Failed);
-    interrupts::hlt_loop();
+    hlt_loop();
 }
 
 /// Entry point for `cargo test`
@@ -68,7 +75,7 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     init();
     test_main();
-    interrupts::hlt_loop();
+    hlt_loop();
 }
 
 #[cfg(test)]

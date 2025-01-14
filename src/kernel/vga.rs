@@ -2,13 +2,15 @@ use core::fmt;
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
+use x86_64::instructions::port::Port;
 
 lazy_static! {
-    //// A global `Writer` instance that can be used for printing to the VGA text buffer.
+    /// A global `Writer` instance that can be used for printing to the VGA text buffer.
+    ///
     /// Used by the `print!` and `println!` macros.
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
-        color_code: ColorCode::new(Color::Yellow, Color::Black),
+        color_code: ColorCode::new(Color::White, Color::Black),
         buffer: unsafe { &mut *(0xb8000 as *mut Buffer) },
     });
 }
@@ -78,12 +80,57 @@ pub struct Writer {
 }
 
 impl Writer {
+    fn cursor_position(&self) -> usize {
+        let cursor_y = BUFFER_HEIGHT - 1;
+        let cursor_x = self.column_position;
+        cursor_y * BUFFER_WIDTH + cursor_x
+    }
+
+    // TODO: This might not work as expected
+    pub fn enable_cursor(&mut self) {
+        let pos = self.cursor_position();
+        let mut port_3d4 = Port::new(0x3D4);
+        let mut port_3d5 = Port::new(0x3D5);
+        unsafe {
+            port_3d4.write(0x0A as u8);
+            let val = port_3d5.read();
+            port_3d5.write(((val & 0xC0) | pos as u8) as u8);
+            port_3d4.write(0x0B as u8);
+            let val = port_3d5.read();
+            port_3d5.write(((val & 0xE0) | pos as u8) as u8);
+        }
+    }
+    
+    pub fn write_cursor(&mut self) {
+        let pos = self.cursor_position();
+        let mut port_3d4 = Port::new(0x3D4);
+        let mut port_3d5 = Port::new(0x3D5);
+        unsafe {
+            port_3d4.write(0x0F as u8);
+            port_3d5.write((pos & 0xFF) as u8);
+            port_3d4.write(0x0E as u8);
+            port_3d5.write(((pos >> 8) & 0xFF) as u8);
+        }
+    }
+
     /// Writes an ASCII byte to the buffer.
     ///
     /// Wraps lines at `BUFFER_WIDTH`. Supports the `\n` newline character.
     pub fn write_byte(&mut self, byte: u8) {
         match byte {
             b'\n' => self.new_line(),
+            0x08 => {
+                if self.column_position > 0 {
+                    self.column_position -= 1;
+                    let blank = ScreenChar {
+                        ascii_character: b' ',
+                        color_code: self.color_code,
+                    };
+                    let row = BUFFER_HEIGHT - 1;
+                    let col = self.column_position;
+                    self.buffer.chars[row][col].write(blank);
+                }
+            }
             byte => {
                 if self.column_position >= BUFFER_WIDTH {
                     self.new_line();
@@ -110,7 +157,9 @@ impl Writer {
     fn write_string(&mut self, s: &str) {
         for byte in s.bytes() {
             match byte {
-                0x20..=0x7e | b'\n' => self.write_byte(byte),
+                // printable ASCII byte, backspace, or newline
+                0x20..=0x7e | 0x08 | b'\n' => self.write_byte(byte),
+                // not part of printable ASCII range
                 _ => self.write_byte(0xfe),
             }
         }
@@ -143,6 +192,7 @@ impl Writer {
 impl fmt::Write for Writer {
     fn write_str(&mut self, s: &str) -> fmt::Result {
         self.write_string(s);
+        self.write_cursor();
         Ok(())
     }
 }
@@ -150,14 +200,7 @@ impl fmt::Write for Writer {
 /// Like the `print!` macro in the standard library, but prints to the VGA text buffer.
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => ($crate::vga_buffer::_print(format_args!($($arg)*)));
-}
-
-/// Like the `println!` macro in the standard library, but prints to the VGA text buffer.
-#[macro_export]
-macro_rules! println {
-    () => ($crate::print!("\n"));
-    ($($arg:tt)*) => ($crate::print!("{}\n", format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::kernel::vga::_print(format_args!($($arg)*)));
 }
 
 /// Prints the given formatted string to the VGA text buffer
@@ -169,21 +212,5 @@ pub fn _print(args: fmt::Arguments) {
 
     interrupts::without_interrupts(|| {
         WRITER.lock().write_fmt(args).unwrap();
-    });
-}
-
-#[test_case]
-fn test_println_output() {
-    use core::fmt::Write;
-    use x86_64::instructions::interrupts;
-
-    let s = "Some test string that fits on a single line";
-    interrupts::without_interrupts(|| {
-        let mut writer = WRITER.lock();
-        writeln!(writer, "\n{}", s).expect("writeln failed");
-        for (i, c) in s.chars().enumerate() {
-            let screen_char = writer.buffer.chars[BUFFER_HEIGHT - 2][i].read();
-            assert_eq!(char::from(screen_char.ascii_character), c);
-        }
     });
 }

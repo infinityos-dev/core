@@ -4,46 +4,24 @@
 #![test_runner(infinity_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use infinity_os::print;
-use infinity_os::println;
+use infinity_os::user::shell;
 
-#[no_mangle]
-pub extern "C" fn _start() -> ! {
+entry_point!(kernel_main);
+
+pub fn kernel_main(_boot_info: &'static BootInfo) -> ! {
     infinity_os::init();
-    print_logo();
 
-    #[cfg(test)]
-    test_main();
+    shell::print_banner();
+    shell::print_prompt();
 
-    println!("Welcome to Infinity OS!");
-    print!("> ");
-
-    infinity_os::arch::interrupts::hlt_loop();
+    infinity_os::hlt_loop();
 }
 
-#[cfg(not(test))]
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    println!("{}", info);
-    infinity_os::arch::interrupts::hlt_loop();
-}
-
-#[cfg(test)]
-#[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    infinity_os::test_panic_handler(info)
-}
-
-fn print_logo() {
-    println!("");
-    println!("  _____        __ _       _ _          ____   _____ ");
-    println!(" |_   _|      / _(_)     (_) |        / __ \\ / ____|");
-    println!("   | |  _ __ | |_ _ _ __  _| |_ _   _| |  | | (___  ");
-    println!("   | | | '_ \\|  _| | '_ \\| | __| | | | |  | |\\___ \\ ");
-    println!("  _| |_| | | | | | | | | | | |_| |_| | |__| |____) |");
-    println!(" |_____|_| |_|_| |_|_| |_|_|\\__|\\__, |\\____/|_____/ ");
-    println!("                                 __/ |              ");
-    println!("                                |___/               ");
-    println!("");
+    print!("{}\n", info);
+    infinity_os::hlt_loop();
 }
