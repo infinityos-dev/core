@@ -6,7 +6,8 @@
 
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
-use infinity_os::{print, shell};
+use infinity_os::print;
+use infinity_os::user::shell;
 
 entry_point!(kernel_main);
 

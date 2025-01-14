@@ -7,18 +7,13 @@
 
 use core::panic::PanicInfo;
 
-pub mod clock;
-pub mod gdt;
-pub mod interrupts;
-pub mod layouts;
-pub mod shell;
-pub mod string;
-pub mod vga;
+pub mod kernel;
+pub mod user;
 
 pub fn init() {
-    gdt::init();
-    interrupts::init_idt();
-    unsafe { interrupts::PICS.lock().initialize() };
+    kernel::gdt::init();
+    kernel::interrupts::init_idt();
+    unsafe { kernel::interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
 }
 

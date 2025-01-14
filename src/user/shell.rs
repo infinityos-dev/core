@@ -1,5 +1,6 @@
-use crate::{clock, print};
-use crate::string::String;
+use crate::print;
+use crate::kernel::clock;
+use crate::kernel::string::String;
 use lazy_static::lazy_static;
 use spin::Mutex;
 
