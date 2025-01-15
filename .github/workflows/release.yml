@@ -55,16 +55,16 @@ jobs:
           echo "release_tag=$today" >> $GITHUB_ENV
 
       - name: Create GitHub Release
-        if: ${{ env.commits_since != '0' }}
         id: create_release
-        uses: actions/create-release@v1
+        uses: actions/create-release@v1.1.0
         with:
           tag_name: ${{ env.release_tag }}
           release_name: Release ${{ env.release_tag }}
           draft: false
           prerelease: false
           generate_release_notes: true
-          token: ${{ secrets.GITHUB_TOKEN }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Upload Release Asset
         if: ${{ env.commits_since != '0' }}
