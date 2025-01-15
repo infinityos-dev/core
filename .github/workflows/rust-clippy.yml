@@ -1,4 +1,4 @@
-name: rust-clippy analyze
+name: Rust Clippy analyze
 
 on:
   push:
