@@ -20,6 +20,9 @@ jobs:
           toolchain: nightly
           override: true
 
+      - name: Install rust-src
+        run: rustup component add rust-src --toolchain nightly
+
       - name: Install bootimage
         run: cargo install bootimage
 
