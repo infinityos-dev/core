@@ -1,0 +1,70 @@
+name: Daily Build and Release
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
+      - name: Install bootimage
+        run: cargo install bootimage
+
+      - name: Check if there are new commits
+        id: check_commits
+        run: |
+          last_release=$(gh release list --limit 1 --json tagName -q '.[0].tagName' || echo "")
+          if [ -n "$last_release" ]; then
+            commits_since=$(git rev-list ${last_release}..HEAD --count)
+          else
+            commits_since=$(git rev-list HEAD --count)
+          fi
+          echo "commits_since=$commits_since" >> $GITHUB_ENV
+
+      - name: Skip if no new commits
+        if: ${{ env.commits_since == '0' }}
+        run: echo "No new commits since the last release. Skipping build and release."
+
+      - name: Build the kernel
+        if: ${{ env.commits_since != '0' }}
+        run: cargo bootimage
+
+      - name: Generate release tag
+        if: ${{ env.commits_since != '0' }}
+        id: generate_tag
+        run: |
+          today=$(date -u +%Y.%m.%d)
+          echo "release_tag=$today" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        if: ${{ env.commits_since != '0' }}
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: ${{ env.release_tag }}
+          release_name: Release ${{ env.release_tag }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Release Asset
+        if: ${{ env.commits_since != '0' }}
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: target/x86_64-infinity_os/debug/bootimage-infinity_os.bin
+          asset_name: bootimage-infinity_os.bin
+          asset_content_type: application/octet-stream
