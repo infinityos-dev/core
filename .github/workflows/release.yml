@@ -54,23 +54,21 @@ jobs:
           today=$(date -u +%Y.%m.%d)
           echo "release_tag=$today" >> $GITHUB_ENV
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1.1.0
-        with:
-          tag_name: ${{ env.release_tag }}
-          release_name: Release ${{ env.release_tag }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+      - name: Create GitHub Release and Upload Asset
+        if: ${{ env.commits_since != '0' }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Upload Release Asset
-        if: ${{ env.commits_since != '0' }}
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: target/x86_64-infinity_os/debug/bootimage-infinity_os.bin
-          asset_name: bootimage-infinity_os.bin
-          asset_content_type: application/octet-stream
+        run: |
+          tag=${{ env.release_tag }}
+          asset_path="target/x86_64-infinity_os/debug/bootimage-infinity_os.bin"
+          asset_name="bootimage-infinity_os.bin"
+          if [ -f "$asset_path" ]; then
+            gh release create "$tag" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="Release $tag" \
+              --generate-notes \
+              --assets "$asset_path"
+          else
+            echo "Asset file $asset_path not found. Skipping release creation."
+            exit 1
+          fi
