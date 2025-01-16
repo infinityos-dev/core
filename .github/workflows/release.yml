@@ -61,13 +61,12 @@ jobs:
         run: |
           tag=${{ env.release_tag }}
           asset_path="target/x86_64-infinity_os/debug/bootimage-infinity_os.bin"
-          asset_name="bootimage-infinity_os.bin"
           if [ -f "$asset_path" ]; then
             gh release create "$tag" \
               --repo="$GITHUB_REPOSITORY" \
               --title="Release $tag" \
               --generate-notes \
-              --assets "$asset_path"
+              "$asset_path"
           else
             echo "Asset file $asset_path not found. Skipping release creation."
             exit 1
