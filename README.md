@@ -54,7 +54,7 @@ cargo run
 You can also write the image to an USB stick for booting it on a real machine. On Linux, the command for this is:
 
 ```
-dd if=target/x86_64-infinity_os/debug/bootimage-infinity_os.bin of=/dev/sdX && sync
+dd if=target/x86_64-infinity_os/release/bootimage-infinity_os.bin of=/dev/sdX && sync
 ```
 
 Where `sdX` is the device name of your USB stick. **Be careful** to choose the correct device name, because everything on that device is overwritten.
