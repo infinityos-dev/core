@@ -10,6 +10,12 @@ use core::panic::PanicInfo;
 pub mod kernel;
 pub mod user;
 
+#[cfg(test)]
+use bootloader::{entry_point, BootInfo};
+
+#[cfg(test)]
+entry_point!(test_kernel_main);
+
 pub fn init() {
     kernel::gdt::init();
     kernel::interrupts::init_idt();
@@ -72,7 +78,7 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 /// Entry point for `cargo test`
 #[cfg(test)]
 #[no_mangle]
-pub extern "C" fn _start() -> ! {
+fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
     init();
     test_main();
     hlt_loop();
