@@ -9,6 +9,7 @@ extern crate alloc;
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use infinity_os::kernel;
+use infinity_os::kernel::task::{simple_executor::SimpleExecutor, Task};
 use infinity_os::print;
 use infinity_os::user::shell;
 use x86_64::VirtAddr;
@@ -28,6 +29,10 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
+    let mut executor = SimpleExecutor::new();
+    executor.spawn(Task::new(example_task()));
+    executor.run();
+
     shell::print_prompt();
 
     infinity_os::hlt_loop();
@@ -37,4 +42,13 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
 fn panic(info: &PanicInfo) -> ! {
     print!("{}\n", info);
     infinity_os::hlt_loop();
+}
+
+async fn async_number() -> u32 {
+    42
+}
+
+async fn example_task() {
+    let number = async_number().await;
+    print!("async number: {}\n", number);
 }

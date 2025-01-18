@@ -5,4 +5,5 @@ pub mod interrupts;
 pub mod layouts;
 pub mod memory;
 pub mod string;
+pub mod task;
 pub mod vga;
