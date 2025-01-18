@@ -10,7 +10,7 @@ use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use infinity_os::kernel;
 use infinity_os::kernel::task::keyboard;
-use infinity_os::kernel::task::{simple_executor::SimpleExecutor, Task};
+use infinity_os::kernel::task::{executor::Executor, Task};
 use infinity_os::print;
 use x86_64::VirtAddr;
 
@@ -27,13 +27,9 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
-    let mut executor = SimpleExecutor::new();
+    let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::keyboard_task()));
     executor.run();
-
-    print!("Hello, world!");
-
-    infinity_os::hlt_loop();
 }
 
 #[panic_handler]
