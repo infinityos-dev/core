@@ -4,6 +4,9 @@
 #![test_runner(infinity_os::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
+extern crate alloc;
+
+use alloc::{boxed::Box, rc::Rc, vec, vec::Vec};
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use infinity_os::kernel;
@@ -18,14 +21,13 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     shell::print_banner();
 
+    /* Memory Initialization */
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     let mut mapper = unsafe { kernel::memory::init(phys_mem_offset) };
     let mut frame_allocator =
         unsafe { kernel::memory::BootInfoFrameAllocator::init(&boot_info.memory_map) };
-
-    // map an unused page
-    let page = Page::containing_address(VirtAddr::new(0xdeadbeaf000));
-    kernel::memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
+    kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
+        .expect("heap initialization failed");
 
     shell::print_prompt();
 
