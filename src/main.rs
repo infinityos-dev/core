@@ -28,9 +28,10 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
         .expect("heap initialization failed");
 
     let mut executor = SimpleExecutor::new();
-    executor.spawn(Task::new(example_task()));
-    executor.spawn(Task::new(keyboard::print_keypresses()));
+    executor.spawn(Task::new(keyboard::keyboard_task()));
     executor.run();
+
+    print!("Hello, world!");
 
     infinity_os::hlt_loop();
 }
@@ -39,13 +40,4 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
 fn panic(info: &PanicInfo) -> ! {
     print!("{}\n", info);
     infinity_os::hlt_loop();
-}
-
-async fn async_number() -> u32 {
-    42
-}
-
-async fn example_task() {
-    let number = async_number().await;
-    print!("async number: {}\n", number);
 }

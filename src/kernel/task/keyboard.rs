@@ -6,9 +6,8 @@ use core::{
 };
 use crossbeam_queue::ArrayQueue;
 use futures_util::stream::Stream;
-use futures_util::stream::StreamExt;
 use futures_util::task::AtomicWaker;
-use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
+use pc_keyboard::{layouts, HandleControl, Keyboard, ScancodeSet1};
 
 static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 static WAKER: AtomicWaker = AtomicWaker::new();
@@ -64,19 +63,22 @@ impl Stream for ScancodeStream {
     }
 }
 
-pub async fn print_keypresses() {
-    let mut scancodes = ScancodeStream::new();
-    let mut keyboard = Keyboard::new(ScancodeSet1::new(),
-        layouts::Us104Key, HandleControl::Ignore);
+pub async fn keyboard_task() {
+    let mut _scancodes = ScancodeStream::new();
+    let mut _keyboard = Keyboard::new(
+        ScancodeSet1::new(),
+        layouts::Us104Key,
+        HandleControl::Ignore,
+    );
 
-    while let Some(scancode) = scancodes.next().await {
-        if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
-            if let Some(key) = keyboard.process_keyevent(key_event) {
-                match key {
-                    DecodedKey::Unicode(character) => print!("{}", character),
-                    DecodedKey::RawKey(key) => print!("{:?}", key),
-                }
-            }
-        }
-    }
+    // while let Some(scancode) = scancodes.next().await {
+    //     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
+    //         if let Some(key) = keyboard.process_keyevent(key_event) {
+    //             match key {
+    //                 DecodedKey::Unicode(character) => print!("{}", character),
+    //                 DecodedKey::RawKey(key) => print!("{:?}", key),
+    //             }
+    //         }
+    //     }
+    // }
 }
