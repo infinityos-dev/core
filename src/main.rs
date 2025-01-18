@@ -9,6 +9,7 @@ extern crate alloc;
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use infinity_os::kernel;
+use infinity_os::kernel::task::keyboard;
 use infinity_os::kernel::task::{simple_executor::SimpleExecutor, Task};
 use infinity_os::print;
 use x86_64::VirtAddr;
@@ -28,6 +29,7 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
     let mut executor = SimpleExecutor::new();
     executor.spawn(Task::new(example_task()));
+    executor.spawn(Task::new(keyboard::print_keypresses()));
     executor.run();
 
     infinity_os::hlt_loop();
