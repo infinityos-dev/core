@@ -10,7 +10,6 @@ extern crate alloc;
 use core::panic::PanicInfo;
 
 pub mod kernel;
-pub mod user;
 
 #[cfg(test)]
 use bootloader::{entry_point, BootInfo};

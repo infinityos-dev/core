@@ -11,15 +11,12 @@ use core::panic::PanicInfo;
 use infinity_os::kernel;
 use infinity_os::kernel::task::{simple_executor::SimpleExecutor, Task};
 use infinity_os::print;
-use infinity_os::user::shell;
 use x86_64::VirtAddr;
 
 entry_point!(kernel_main);
 
 pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     infinity_os::init();
-
-    shell::print_banner();
 
     /* Memory Initialization */
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
@@ -32,8 +29,6 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     let mut executor = SimpleExecutor::new();
     executor.spawn(Task::new(example_task()));
     executor.run();
-
-    shell::print_prompt();
 
     infinity_os::hlt_loop();
 }
