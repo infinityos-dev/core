@@ -6,17 +6,29 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  CARGO_TERM_COLOR: always
-
 jobs:
-  build:
-
+  release:
+    name: Build and Release
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Build
-      run: cargo build --verbose
-    - name: Test
-      run: cargo test --verbose
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
+      - name: Install required Rust components
+        run: |
+          rustup component add rust-src --toolchain nightly
+          rustup component add llvm-tools-preview --toolchain nightly
+
+      - name: Install bootimage
+        run: cargo install bootimage
+
+      - name: Build Infinity OS
+        if: ${{ env.commits_since != '0' }}
+        run: cargo bootimage
