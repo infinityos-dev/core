@@ -6,13 +6,12 @@
 
 extern crate alloc;
 
-use alloc::{boxed::Box, rc::Rc, vec, vec::Vec};
 use bootloader::{entry_point, BootInfo};
 use core::panic::PanicInfo;
 use infinity_os::kernel;
 use infinity_os::print;
 use infinity_os::user::shell;
-use x86_64::{structures::paging::Page, VirtAddr};
+use x86_64::VirtAddr;
 
 entry_point!(kernel_main);
 
