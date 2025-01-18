@@ -29,23 +29,6 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
-    let heap_value = Box::new(41);
-    print!("heap_value at {:p}\n", heap_value);
-    let mut vec = Vec::new();
-    for i in 0..500 {
-        vec.push(i);
-    }
-    print!("vec at {:p}\n", vec.as_slice());
-    let reference_counted = Rc::new(vec![1, 2, 3]);
-    let cloned_reference = reference_counted.clone();
-    print!("current reference count is {}\n", Rc::strong_count(&cloned_reference));
-    core::mem::drop(reference_counted);
-    print!("reference count is {} now\n", Rc::strong_count(&cloned_reference));
-
-    // map an unused page
-    let page = Page::containing_address(VirtAddr::new(0xdeadbeaf000));
-    kernel::memory::create_example_mapping(page, &mut mapper, &mut frame_allocator);
-
     shell::print_prompt();
 
     infinity_os::hlt_loop();
