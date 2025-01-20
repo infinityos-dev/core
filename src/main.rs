@@ -27,6 +27,8 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
+    panic!("");
+
     let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::keyboard_task()));
     executor.run();
@@ -35,5 +37,6 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     print!("{}\n", info);
+    kernel::debug::stack_trace::walk_stack();
     infinity_os::hlt_loop();
 }
