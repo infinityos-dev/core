@@ -35,5 +35,6 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
     print!("{}\n", info);
+    kernel::debug::stack_trace::walk_stack();
     infinity_os::hlt_loop();
 }
