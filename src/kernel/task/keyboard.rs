@@ -5,9 +5,9 @@ use core::{
     task::{Context, Poll},
 };
 use crossbeam_queue::ArrayQueue;
-use futures_util::{stream::Stream, StreamExt};
 use futures_util::task::AtomicWaker;
-use pc_keyboard::{layouts, DecodedKey, HandleControl, Keyboard, ScancodeSet1};
+use futures_util::{stream::Stream, StreamExt};
+use pc_keyboard::{layouts, HandleControl, KeyCode, Keyboard, ScancodeSet1};
 
 static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
 static WAKER: AtomicWaker = AtomicWaker::new();
@@ -20,7 +20,7 @@ pub(crate) fn add_scancode(scancode: u8) {
         if let Err(_) = queue.push(scancode) {
             print!("WARNING: scancode queue full; dropping keyboard input\n");
         } else {
-            WAKER.wake(); // new
+            WAKER.wake();
         }
     } else {
         print!("WARNING: scancode queue uninitialized\n");
@@ -75,8 +75,21 @@ pub async fn keyboard_task() {
         if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
             if let Some(key) = keyboard.process_keyevent(key_event) {
                 match key {
-                    DecodedKey::Unicode(character) => print!("{}", character),
-                    DecodedKey::RawKey(key) => print!("{:?}", key),
+                    pc_keyboard::DecodedKey::RawKey(
+                        KeyCode::LAlt
+                        | KeyCode::RAlt2
+                        | KeyCode::RAltGr
+                        | KeyCode::LControl
+                        | KeyCode::RControl
+                        | KeyCode::RShift
+                        | KeyCode::LShift
+                        | KeyCode::PageDown
+                        | KeyCode::PageUp
+                        | KeyCode::Home
+                        | KeyCode::CapsLock,
+                    ) => {}
+                    pc_keyboard::DecodedKey::Unicode(character) => print!("{}", character),
+                    pc_keyboard::DecodedKey::RawKey(key) => print!("{:?}", key),
                 }
             }
         }
