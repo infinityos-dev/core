@@ -27,6 +27,9 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
+    let args: [&str; 2] = ["date", "--metric"];
+    kernel::date::main(&args);
+
     let mut executor = Executor::new();
     executor.spawn(Task::new(keyboard::keyboard_task()));
     executor.run();
