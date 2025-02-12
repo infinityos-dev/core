@@ -21,9 +21,9 @@ pub fn init() {
         Ok(acpi) => {
             if let Ok(info) = acpi.platform_info() {
                 if let Some(info) = info.processor_info {
-                    log_cpu(&info.boot_processor);
+                    //log_cpu(&info.boot_processor);
                     for processor in info.application_processors.iter() {
-                        log_cpu(&processor);
+                        //log_cpu(&processor);
                     }
                 }
             }
