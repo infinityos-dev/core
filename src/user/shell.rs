@@ -33,13 +33,13 @@ pub fn key_handle(c: char) {
         match stdin.as_str() {
             "" => {}
             "help" => {
-                print!("InfinityOS is a lightweight easy to use operating system made to limit e-waste\n");
+                print!("Lightweight easy to use operating system made to limit e-waste");
             }
-            "uptime" => {
-                print!("{:.1} seconds\n", kernel::clock::uptime());
+            "version" => {
+                print!("Infinity OS v{}", env!("CARGO_PKG_VERSION"));
             }
             _ => {
-                print!("Unknown command\n");
+                print!("Unknown command: {}", stdin.as_str());
             }
         }
         stdin.clear();
