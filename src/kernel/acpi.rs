@@ -22,7 +22,7 @@ pub fn init() {
             if let Ok(info) = acpi.platform_info() {
                 if let Some(info) = info.processor_info {
                     //log_cpu(&info.boot_processor);
-                    for processor in info.application_processors.iter() {
+                    for _processor in info.application_processors.iter() {
                         //log_cpu(&processor);
                     }
                 }
@@ -166,6 +166,7 @@ where
     unsafe { *virtual_address.as_ptr::<T>() }
 }
 
+#[allow(dead_code)]
 fn log_cpu(processor: &Processor) {
     let kind = if processor.is_ap { "AP" } else { "BP" };
     let state = match processor.state {
