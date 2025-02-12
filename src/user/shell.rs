@@ -8,6 +8,24 @@ lazy_static! {
     pub static ref STDIN: Mutex<String> = Mutex::new(String::new());
 }
 
+pub fn print_banner() {
+    print!("                     ____\n");
+    print!("                    /|o  |            ()()\n");
+    print!("                   /o|  o|           (o.o )\n");
+    print!("+---------------- /o_|_o_|------------> ^ <------------------------------------+\n");
+    print!("|                                                                              |\n");
+    print!("|                                 Infinity OS                                  |\n");
+    print!("|                                                                              |\n");
+    print!("|                         Lightweight Operating System                         |\n");
+    print!("|                                                                              |\n");
+    print!("+------------------------------------------------------------------------------+\n");
+    print!("\n");
+}
+
+pub fn print_prompt() {
+    print!("> ");
+}
+
 pub fn key_handle(c: char) {
     let mut stdin = STDIN.lock();
     if c == '\n' {

@@ -7,6 +7,7 @@
 extern crate alloc;
 
 use bootloader::{entry_point, BootInfo};
+use infinity_os::user::shell;
 use core::panic::PanicInfo;
 use infinity_os::kernel;
 use infinity_os::print;
@@ -25,7 +26,8 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 
-    print!("> ");
+    shell::print_banner();
+    shell::print_prompt();
     infinity_os::hlt_loop();
 }
 
