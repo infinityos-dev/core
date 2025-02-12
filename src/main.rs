@@ -7,29 +7,15 @@
 extern crate alloc;
 
 use bootloader::{entry_point, BootInfo};
-use infinity_os::kernel::memory;
 use infinity_os::user::shell;
 use core::panic::PanicInfo;
 use infinity_os::kernel;
 use infinity_os::print;
-use x86_64::VirtAddr;
 
 entry_point!(kernel_main);
 
 pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    infinity_os::init();
-
-    /* Memory Initialization */
-    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    memory::PHYS_MEM_OFFSET.call_once(|| boot_info.physical_memory_offset);
-    let mut mapper = unsafe { kernel::memory::init(phys_mem_offset) };
-    let mut frame_allocator =
-        unsafe { kernel::memory::BootInfoFrameAllocator::init(&boot_info.memory_map) };
-    kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
-
-    kernel::acpi::init();
-    kernel::cpuid::init();
+    infinity_os::init(boot_info);
 
     shell::print_banner();
     shell::print_prompt();
