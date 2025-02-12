@@ -1,6 +1,5 @@
-use super::super::kernel;
 use crate::kernel::string::String;
-use crate::print;
+use crate::{kernel, print};
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -37,6 +36,9 @@ pub fn key_handle(c: char) {
             }
             "version" => {
                 print!("Infinity OS v{}", env!("CARGO_PKG_VERSION"));
+            }
+            "shutdown" => {
+                kernel::acpi::shutdown();
             }
             _ => {
                 print!("Unknown command: {}", stdin.as_str());

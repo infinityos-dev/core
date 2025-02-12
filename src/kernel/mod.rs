@@ -1,3 +1,4 @@
+pub mod acpi;
 pub mod allocator;
 pub mod clock;
 pub mod debug;
