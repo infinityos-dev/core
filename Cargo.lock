@@ -204,6 +204,7 @@ dependencies = [
  "linked_list_allocator",
  "pc-keyboard",
  "pic8259",
+ "raw-cpuid",
  "spin",
  "volatile 0.2.7",
  "x86_64",
@@ -275,6 +276,15 @@ name = "radium"
 version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
+
+[[package]]
+name = "raw-cpuid"
+version = "11.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c6928fa44c097620b706542d428957635951bade7143269085389d42c8a4927e"
+dependencies = [
+ "bitflags",
+]
 
 [[package]]
 name = "rustversion"
