@@ -1,9 +1,20 @@
 use bootloader::bootinfo::{MemoryMap, MemoryRegionType};
+use spin::Once;
 use x86_64::structures::paging::OffsetPageTable;
 use x86_64::{
     structures::paging::{FrameAllocator, Mapper, Page, PageTable, PhysFrame, Size4KiB},
     PhysAddr, VirtAddr,
 };
+
+pub static PHYS_MEM_OFFSET: Once<u64> = Once::new();
+
+pub fn phys_mem_offset() -> u64 {
+    unsafe { *PHYS_MEM_OFFSET.get_unchecked() }
+}
+
+pub fn phys_to_virt(addr: PhysAddr) -> VirtAddr {
+    VirtAddr::new(addr.as_u64() + phys_mem_offset())
+}
 
 /// A FrameAllocator that returns usable frames from the bootloader's memory map.
 pub struct BootInfoFrameAllocator {
@@ -27,11 +38,9 @@ impl BootInfoFrameAllocator {
     /// Returns an iterator over the usable frames specified in the memory map.
     fn usable_frames(&self) -> impl Iterator<Item = PhysFrame> {
         let regions = self.memory_map.iter();
-        let usable_regions = regions
-            .filter(|r| r.region_type == MemoryRegionType::Usable);
+        let usable_regions = regions.filter(|r| r.region_type == MemoryRegionType::Usable);
 
-        let addr_ranges = usable_regions
-            .map(|r| r.range.start_addr()..r.range.end_addr());
+        let addr_ranges = usable_regions.map(|r| r.range.start_addr()..r.range.end_addr());
 
         let frame_addresses = addr_ranges.flat_map(|r| r.step_by(4096));
 
