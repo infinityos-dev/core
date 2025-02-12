@@ -1,8 +1,8 @@
-use crate::print;
+use super::super::kernel;
 use crate::kernel::string::String;
+use crate::print;
 use lazy_static::lazy_static;
 use spin::Mutex;
-use super::super::kernel;
 
 lazy_static! {
     pub static ref STDIN: Mutex<String> = Mutex::new(String::new());
@@ -23,7 +23,7 @@ pub fn print_banner() {
 }
 
 pub fn print_prompt() {
-    print!("> ");
+    print!("\n> ");
 }
 
 pub fn key_handle(c: char) {
@@ -31,18 +31,19 @@ pub fn key_handle(c: char) {
     if c == '\n' {
         print!("\n");
         match stdin.as_str() {
+            "" => {}
             "help" => {
-                print!("InfinityOS is a lightweight easy to use operating system made to limit e-waste");
-            },
+                print!("InfinityOS is a lightweight easy to use operating system made to limit e-waste\n");
+            }
             "uptime" => {
                 print!("{:.1} seconds\n", kernel::clock::uptime());
-            },
+            }
             _ => {
-                print!("Unknown command");
+                print!("Unknown command\n");
             }
         }
         stdin.clear();
-        print!("\n> ");
+        print_prompt();
     } else {
         if c != '\\' {
             stdin.push(c as u8);
