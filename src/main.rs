@@ -29,6 +29,7 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
         .expect("heap initialization failed");
 
     kernel::acpi::init();
+    kernel::cpuid::init();
 
     shell::print_banner();
     shell::print_prompt();
