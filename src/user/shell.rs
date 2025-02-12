@@ -33,16 +33,16 @@ pub fn key_handle(c: char) {
         match stdin.as_str() {
             "" => {}
             "help" => {
-                print!("Lightweight easy to use operating system made to limit e-waste");
+                print!("Lightweight easy to use operating system made to limit e-waste\n");
             }
             "version" => {
-                print!("Infinity OS v{}", env!("CARGO_PKG_VERSION"));
+                print!("Infinity OS v{}\n", env!("CARGO_PKG_VERSION"));
             }
             "shutdown" => {
                 kernel::acpi::shutdown();
             }
             _ => {
-                print!("Unknown command: {}", stdin.as_str());
+                print!("Unknown command: {}\n", stdin.as_str());
             }
         }
         stdin.clear();
