@@ -8,6 +8,7 @@ lazy_static! {
 }
 
 pub fn print_banner() {
+    print!("\n");
     print!("                     ____\n");
     print!("                    /|o  |            ()()\n");
     print!("                   /o|  o|           (o.o )\n");
