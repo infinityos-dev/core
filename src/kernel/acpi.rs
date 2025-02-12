@@ -16,7 +16,7 @@ static mut SLP_TYPA: u16 = 0;
 static SLP_LEN: u16 = 1 << 13;
 
 pub fn init() {
-    let res = unsafe { AcpiTables::search_for_rsdp_bios(MorosAcpiHandler) };
+    let res = unsafe { AcpiTables::search_for_rsdp_bios(InfinityAcpiHandler) };
     match res {
         Ok(acpi) => {
             if let Ok(info) = acpi.platform_info() {
@@ -39,7 +39,7 @@ pub fn init() {
                 let virt_addr = memory::phys_to_virt(phys_addr);
                 let ptr = virt_addr.as_ptr();
                 let table = unsafe { core::slice::from_raw_parts(ptr, dsdt.length as usize) };
-                let handler = Box::new(MorosAmlHandler);
+                let handler = Box::new(InfinityAmlHandler);
                 let mut aml = AmlContext::new(handler, DebugVerbosity::None);
                 if aml.parse_table(table).is_ok() {
                     let name = AmlName::from_str("\\_S5").unwrap();
@@ -79,9 +79,9 @@ pub fn shutdown() {
 }
 
 #[derive(Clone)]
-pub struct MorosAcpiHandler;
+pub struct InfinityAcpiHandler;
 
-impl AcpiHandler for MorosAcpiHandler {
+impl AcpiHandler for InfinityAcpiHandler {
     unsafe fn map_physical_region<T>(&self, addr: usize, size: usize) -> PhysicalMapping<Self, T> {
         let phys_addr = PhysAddr::new(addr as u64);
         let virt_addr = memory::phys_to_virt(phys_addr);
@@ -92,9 +92,9 @@ impl AcpiHandler for MorosAcpiHandler {
     fn unmap_physical_region<T>(_region: &PhysicalMapping<Self, T>) {}
 }
 
-struct MorosAmlHandler;
+struct InfinityAmlHandler;
 
-impl Handler for MorosAmlHandler {
+impl Handler for InfinityAmlHandler {
     fn read_u8(&self, address: usize) -> u8 {
         read_addr::<u8>(address)
     }
