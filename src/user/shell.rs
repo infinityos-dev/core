@@ -48,7 +48,12 @@ pub fn key_handle(c: char) {
         stdin.clear();
         print_prompt();
     } else {
-        if c != '\\' {
+        if c == 0x08 as char {
+            if stdin.len() > 0 {
+                stdin.pop();
+                print!("{}", c);
+            }
+        } else {
             stdin.push(c as u8);
             print!("{}", c);
         }

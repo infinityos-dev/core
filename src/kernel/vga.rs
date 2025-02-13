@@ -100,7 +100,7 @@ impl Writer {
             port_3d5.write(((val & 0xE0) | pos as u8) as u8);
         }
     }
-    
+
     pub fn write_cursor(&mut self) {
         let pos = self.cursor_position();
         let mut port_3d4 = Port::new(0x3D4);
