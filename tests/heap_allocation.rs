@@ -19,9 +19,9 @@ fn main(boot_info: &'static BootInfo) -> ! {
     use infinity_os::kernel::memory::{self, BootInfoFrameAllocator};
     use x86_64::VirtAddr;
 
-    infinity_os::init();
+    infinity_os::init(boot_info);
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { memory::init(phys_mem_offset) };
+    let mut mapper = unsafe { memory::init_offset_table(phys_mem_offset) };
     let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
     allocator::init_heap(&mut mapper, &mut frame_allocator).expect("heap initialization failed");
 

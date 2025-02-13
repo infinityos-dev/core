@@ -8,8 +8,11 @@
 extern crate alloc;
 
 use core::panic::PanicInfo;
+#[cfg(not(test))]
+use bootloader::BootInfo;
 
 pub mod kernel;
+pub mod user;
 
 #[cfg(test)]
 use bootloader::{entry_point, BootInfo};
@@ -17,11 +20,15 @@ use bootloader::{entry_point, BootInfo};
 #[cfg(test)]
 entry_point!(test_kernel_main);
 
-pub fn init() {
+pub fn init(boot_info: &'static BootInfo) {
     kernel::gdt::init();
     kernel::interrupts::init_idt();
     unsafe { kernel::interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
+
+    kernel::memory::init(boot_info);
+    kernel::acpi::init();
+    kernel::cpuid::init();
 }
 
 pub trait Testable {
@@ -79,8 +86,8 @@ pub fn test_panic_handler(info: &PanicInfo) -> ! {
 /// Entry point for `cargo test`
 #[cfg(test)]
 #[no_mangle]
-fn test_kernel_main(_boot_info: &'static BootInfo) -> ! {
-    init();
+fn test_kernel_main(boot_info: &'static BootInfo) -> ! {
+    init(boot_info);
     test_main();
     hlt_loop();
 }

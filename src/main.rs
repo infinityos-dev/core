@@ -7,29 +7,19 @@
 extern crate alloc;
 
 use bootloader::{entry_point, BootInfo};
+use infinity_os::user::shell;
 use core::panic::PanicInfo;
 use infinity_os::kernel;
-use infinity_os::kernel::task::keyboard;
-use infinity_os::kernel::task::{executor::Executor, Task};
 use infinity_os::print;
-use x86_64::VirtAddr;
 
 entry_point!(kernel_main);
 
 pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    infinity_os::init();
+    infinity_os::init(boot_info);
 
-    /* Memory Initialization */
-    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    let mut mapper = unsafe { kernel::memory::init(phys_mem_offset) };
-    let mut frame_allocator =
-        unsafe { kernel::memory::BootInfoFrameAllocator::init(&boot_info.memory_map) };
-    kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
-
-    let mut executor = Executor::new();
-    executor.spawn(Task::new(keyboard::keyboard_task()));
-    executor.run();
+    shell::print_banner();
+    shell::print_prompt();
+    infinity_os::hlt_loop();
 }
 
 #[panic_handler]
