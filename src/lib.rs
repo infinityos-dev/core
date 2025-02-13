@@ -16,7 +16,6 @@ pub mod user;
 
 #[cfg(test)]
 use bootloader::{entry_point, BootInfo};
-use x86_64::VirtAddr;
 
 #[cfg(test)]
 entry_point!(test_kernel_main);
@@ -27,15 +26,7 @@ pub fn init(boot_info: &'static BootInfo) {
     unsafe { kernel::interrupts::PICS.lock().initialize() };
     x86_64::instructions::interrupts::enable();
 
-    /* Memory Initialization */
-    let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
-    kernel::memory::PHYS_MEM_OFFSET.call_once(|| boot_info.physical_memory_offset);
-    let mut mapper = unsafe { kernel::memory::init(phys_mem_offset) };
-    let mut frame_allocator =
-        unsafe { kernel::memory::BootInfoFrameAllocator::init(&boot_info.memory_map) };
-    kernel::allocator::init_heap(&mut mapper, &mut frame_allocator)
-        .expect("heap initialization failed");
-
+    kernel::memory::init(boot_info);
     kernel::acpi::init();
     kernel::cpuid::init();
 }
