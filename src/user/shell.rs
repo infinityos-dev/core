@@ -44,6 +44,9 @@ pub fn key_handle(c: char) {
             "shutdown" => {
                 kernel::acpi::shutdown();
             }
+            "datetime" => {
+                print!("{}", unsafe { kernel::clock::rtc::read_rtc() });
+            }
             _ => {
                 print!("Unknown command: {}\n", stdin.as_str());
             }
