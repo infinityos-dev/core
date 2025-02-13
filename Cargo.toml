@@ -10,7 +10,7 @@ pc-keyboard = "0.5.0"
 heapless = "0.6.1"
 acpi = "5.0.0"
 aml = "0.16.4"
-linked_list_allocator = "0.9.0"
+linked_list_allocator = "0.10.2"
 raw-cpuid = "11.3.0"
 uart_16550 = "=0.2.19"
 
