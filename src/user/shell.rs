@@ -38,6 +38,9 @@ pub fn key_handle(c: char) {
             "version" => {
                 print!("Infinity OS v{}\n", env!("CARGO_PKG_VERSION"));
             }
+            "uptime" => {
+                print!("{:.1} seconds\n", kernel::clock::uptime());
+            }
             "shutdown" => {
                 kernel::acpi::shutdown();
             }
