@@ -2,7 +2,8 @@
 
 ## Unreleased
 
-`datetime` command using RTC
+- `datetime` command using RTC by @ViktorPopp in
+  https://github.com/infinityos-dev/core/pull/43
 
 ## v0.1.0-alpha.1
 
