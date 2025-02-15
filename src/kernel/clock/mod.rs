@@ -1,6 +1,8 @@
 use lazy_static::lazy_static;
 use spin::Mutex;
 
+pub mod rtc;
+
 lazy_static! {
     pub static ref TICKS: Mutex<usize> = Mutex::new(0);
 }
