@@ -23,7 +23,7 @@
   https://github.com/infinityos-dev/core/pull/12
 - Added heap allocator by @ViktorPopp in
   https://github.com/infinityos-dev/core/pull/21
-- Added heap 3 allocators by @ViktorPopp in
+- Added 3 heap allocators by @ViktorPopp in
   https://github.com/infinityos-dev/core/pull/22
 - Added stack trace on panic by @ViktorPopp in
   https://github.com/infinityos-dev/core/pull/28
