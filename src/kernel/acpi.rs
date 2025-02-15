@@ -71,11 +71,12 @@ pub fn init() {
 }
 
 pub fn shutdown() {
-    print!("ACPI Shutdown");
+    print!("Shutting down...");
     unsafe {
         let mut port: Port<u16> = Port::new(PM1A_CNT_BLK as u16);
         port.write(SLP_TYPA | SLP_LEN);
     }
+    print!("An unknown error occurred while shutting down. If possible, please try again.\n\n");
 }
 
 #[derive(Clone)]
