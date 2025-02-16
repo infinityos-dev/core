@@ -73,8 +73,7 @@ pub fn init(boot_info: &'static BootInfo) -> () {
     let phys_mem_offset = VirtAddr::new(boot_info.physical_memory_offset);
     PHYS_MEM_OFFSET.call_once(|| boot_info.physical_memory_offset);
     let mut mapper = unsafe { init_offset_table(phys_mem_offset) };
-    let mut frame_allocator =
-        unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
+    let mut frame_allocator = unsafe { BootInfoFrameAllocator::init(&boot_info.memory_map) };
     super::allocator::init_heap(&mut mapper, &mut frame_allocator)
         .expect("heap initialization failed");
 }
@@ -85,7 +84,7 @@ pub fn init(boot_info: &'static BootInfo) -> () {
 /// complete physical memory is mapped to virtual memory at the passed
 /// `physical_memory_offset`. Also, this function must be only called once
 /// to avoid aliasing `&mut` references (which is undefined behavior).
-unsafe fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut PageTable {
+fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut PageTable {
     use x86_64::registers::control::Cr3;
 
     let (level_4_table_frame, _) = Cr3::read();
@@ -94,7 +93,7 @@ unsafe fn active_level_4_table(physical_memory_offset: VirtAddr) -> &'static mut
     let virt = physical_memory_offset + phys.as_u64();
     let page_table_ptr: *mut PageTable = virt.as_mut_ptr();
 
-    &mut *page_table_ptr // unsafe
+    unsafe { &mut *page_table_ptr }
 }
 
 /// Creates an example mapping for the given page to frame `0xb8000`.
