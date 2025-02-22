@@ -4,8 +4,7 @@
 
 - `datetime` command using RTC by @ViktorPopp in
   https://github.com/infinityos-dev/core/pull/43
-- Better logging support by @ViktorPopp in
-  https://github.com/infinityos-dev/core/pull/?
+- Better logging support by @ViktorPopp
 
 ## v0.1.0-alpha.1
 
