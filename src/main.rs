@@ -6,11 +6,14 @@
 
 extern crate alloc;
 
+use alloc::format;
 use bootloader::{entry_point, BootInfo};
-use infinity_os::user::shell;
 use core::panic::PanicInfo;
-use infinity_os::kernel;
-use infinity_os::print;
+use infinity_os::{
+    kernel,
+    kernel::debug::log::debug,
+    user::shell,
+};
 
 entry_point!(kernel_main);
 
@@ -24,7 +27,7 @@ pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
 
 #[panic_handler]
 fn panic(info: &PanicInfo) -> ! {
-    print!("{}\n", info);
+    debug::panic(&format!("{}", info));
     kernel::debug::stack_trace::walk_stack();
     infinity_os::hlt_loop();
 }

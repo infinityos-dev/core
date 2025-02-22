@@ -6,6 +6,7 @@ pub mod debug;
 pub mod gdt;
 pub mod interrupts;
 pub mod layouts;
+pub mod log;
 pub mod memory;
 pub mod serial;
 pub mod string;
