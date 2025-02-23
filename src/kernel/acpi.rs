@@ -1,8 +1,9 @@
-use crate::print;
+use crate::kernel::debug::log;
 
 use acpi::platform::{Processor, ProcessorState};
 use acpi::{AcpiHandler, AcpiTables, PhysicalMapping};
 use alloc::boxed::Box;
+use alloc::format;
 use aml::value::AmlValue;
 use aml::{AmlContext, AmlName, DebugVerbosity, Handler};
 use core::ptr::NonNull;
@@ -52,7 +53,7 @@ pub fn init() {
                         }
                     }
                 } else {
-                    print!("ACPI: Could not parse AML in DSDT");
+                    log::error("ACPI: Could not parse AML in DSDT");
                     // FIXME: AML parsing works on QEMU and Bochs but not
                     // on VirtualBox at the moment, so we use the following
                     // hardcoded value:
@@ -61,22 +62,22 @@ pub fn init() {
                     }
                 }
             } else {
-                print!("ACPI: Could not find DSDT in BIOS");
+                log::error("ACPI: Could not find DSDT in BIOS");
             }
         }
         Err(_e) => {
-            print!("ACPI: Could not find RDSP in BIOS");
+            log::error("ACPI: Could not find RDSP in BIOS");
         }
     };
 }
 
 pub fn shutdown() {
-    print!("Shutting down...");
+    log::info("Shutting down...");
     unsafe {
         let mut port: Port<u16> = Port::new(PM1A_CNT_BLK as u16);
         port.write(SLP_TYPA | SLP_LEN);
     }
-    print!("An unknown error occurred while shutting down. If possible, please try again.\n\n");
+    log::fatal("An unknown error occurred while shutting down. If possible, please try again.\n\n");
 }
 
 #[derive(Clone)]
@@ -175,5 +176,5 @@ fn log_cpu(processor: &Processor) {
         ProcessorState::Running => "running",
         ProcessorState::WaitingForSipi => "waiting",
     };
-    print!("CPU {}:{} {}", kind, processor.processor_uid, state);
+    log::info(&format!("CPU {}:{} {}", kind, processor.processor_uid, state));
 }
