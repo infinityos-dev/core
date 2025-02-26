@@ -1,0 +1,3 @@
+- lib.rs: BootInfo is passed to memory::init()
+- vga.rs: Limine does not support VGA. Use something like flanterm
+- main.rs: BootInfo passed to init()

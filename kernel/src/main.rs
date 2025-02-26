@@ -2,10 +2,9 @@
 #![no_main]
 
 use core::arch::asm;
+
 use limine::request::{FramebufferRequest, RequestsEndMarker, RequestsStartMarker};
 use limine::BaseRevision;
-
-pub mod graphics;
 
 /// Sets the base revision to the latest revision supported by the crate.
 /// See specification for further info.
@@ -35,9 +34,14 @@ unsafe extern "C" fn kmain() -> ! {
 
     if let Some(framebuffer_response) = FRAMEBUFFER_REQUEST.get_response() {
         if let Some(framebuffer) = framebuffer_response.framebuffers().next() {
-            graphics::clear_screen(&framebuffer, 0x00000000);
+            for i in 0..100_u64 {
+                // Calculate the pixel offset using the framebuffer information we obtained above.
+                // We skip `i` scanlines (pitch is provided in bytes) and add `i * 4` to skip `i` pixels forward.
+                let pixel_offset = i * framebuffer.pitch() + i * 4;
 
-            graphics::draw_text(&framebuffer, "Hello, Limine!", 0, 10, 0xFFFFFF00);
+                // Write 0xFFFFFFFF to the provided pixel offset to fill it white.
+                *(framebuffer.addr().add(pixel_offset as usize) as *mut u32) = 0xFFFFFFFF;
+            }
         }
     }
 
