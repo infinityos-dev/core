@@ -1,42 +1,63 @@
 #![no_std]
 #![no_main]
-#![feature(custom_test_frameworks)]
-#![test_runner(infinity_os::test_runner)]
-#![reexport_test_harness_main = "test_main"]
 
-extern crate alloc;
+use core::arch::asm;
+use limine::request::{FramebufferRequest, RequestsEndMarker, RequestsStartMarker};
+use limine::BaseRevision;
 
-use alloc::format;
-use bootloader::{entry_point, BootInfo};
-use core::panic::PanicInfo;
-use infinity_os::{
-    kernel,
-    kernel::debug::log,
-    kernel::debug::log::*,
-    user::shell,
-};
+pub mod graphics;
 
-entry_point!(kernel_main);
+/// Sets the base revision to the latest revision supported by the crate.
+/// See specification for further info.
+/// Be sure to mark all limine requests with #[used], otherwise they may be removed by the compiler.
+#[used]
+// The .requests section allows limine to find the requests faster and more safely.
+#[link_section = ".requests"]
+static BASE_REVISION: BaseRevision = BaseRevision::new();
 
-pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
-    infinity_os::init(boot_info);
+#[used]
+#[link_section = ".requests"]
+static FRAMEBUFFER_REQUEST: FramebufferRequest = FramebufferRequest::new();
 
-    log(LogLevel::Trace, "This is a trace message");
-    log(LogLevel::Debug, "This is a debug message");
-    log(LogLevel::Info, "System initialization complete");
-    log(LogLevel::Warn, "Low memory warning");
-    log(LogLevel::Error, "Failed to load driver");
-    log(LogLevel::Fatal, "Critical system error");
-    log(LogLevel::Panic, "Kernel panic!");
+/// Define the stand and end markers for Limine requests.
+#[used]
+#[link_section = ".requests_start_marker"]
+static _START_MARKER: RequestsStartMarker = RequestsStartMarker::new();
+#[used]
+#[link_section = ".requests_end_marker"]
+static _END_MARKER: RequestsEndMarker = RequestsEndMarker::new();
 
-    shell::print_banner();
-    shell::print_prompt();
-    infinity_os::hlt_loop();
+#[no_mangle]
+unsafe extern "C" fn kmain() -> ! {
+    // All limine requests must also be referenced in a called function, otherwise they may be
+    // removed by the linker.
+    assert!(BASE_REVISION.is_supported());
+
+    if let Some(framebuffer_response) = FRAMEBUFFER_REQUEST.get_response() {
+        if let Some(framebuffer) = framebuffer_response.framebuffers().next() {
+            graphics::clear_screen(&framebuffer, 0x00000000);
+
+            graphics::draw_text(&framebuffer, "Hello, Limine!", 0, 10, 0xFFFFFF00);
+        }
+    }
+
+    hcf();
 }
 
 #[panic_handler]
-fn panic(info: &PanicInfo) -> ! {
-    log::panic(&format!("{}", info));
-    kernel::debug::stack_trace::walk_stack();
-    infinity_os::hlt_loop();
+fn rust_panic(_info: &core::panic::PanicInfo) -> ! {
+    hcf();
+}
+
+fn hcf() -> ! {
+    loop {
+        unsafe {
+            #[cfg(target_arch = "x86_64")]
+            asm!("hlt");
+            #[cfg(any(target_arch = "aarch64", target_arch = "riscv64"))]
+            asm!("wfi");
+            #[cfg(target_arch = "loongarch64")]
+            asm!("idle 0");
+        }
+    }
 }
