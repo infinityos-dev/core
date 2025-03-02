@@ -1,5 +1,5 @@
 use crate::hlt_loop;
-use crate::kernel::{clock, gdt};
+use crate::{clock, gdt};
 use crate::print;
 use lazy_static::lazy_static;
 use pic8259::ChainedPics;
@@ -83,7 +83,7 @@ extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFr
 }
 
 extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    use crate::kernel::layouts;
+    use crate::layouts;
     use pc_keyboard::{DecodedKey, HandleControl, Keyboard, ScancodeSet1};
     use spin::Mutex;
     use x86_64::instructions::port::Port;
@@ -104,7 +104,7 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
     if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
         if let Some(key) = keyboard.process_keyevent(key_event) {
             match key {
-                DecodedKey::Unicode(c) => crate::user::shell::key_handle(c),
+                DecodedKey::Unicode(c) => crate::shell::key_handle(c),
                 DecodedKey::RawKey(_) => {}
             }
         }

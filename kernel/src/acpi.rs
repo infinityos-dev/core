@@ -1,4 +1,4 @@
-use crate::kernel::debug::log;
+use crate::debug::log;
 
 use acpi::platform::{Processor, ProcessorState};
 use acpi::{AcpiHandler, AcpiTables, PhysicalMapping};
@@ -176,5 +176,8 @@ fn log_cpu(processor: &Processor) {
         ProcessorState::Running => "running",
         ProcessorState::WaitingForSipi => "waiting",
     };
-    log::info(&format!("CPU {}:{} {}", kind, processor.processor_uid, state));
+    log::info(&format!(
+        "CPU {}:{} {}",
+        kind, processor.processor_uid, state
+    ));
 }

@@ -1,2 +1,4 @@
-kernel/target/
-/target
+/limine
+/ovmf
+*.iso
+*.hdd

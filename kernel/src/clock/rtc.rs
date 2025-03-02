@@ -1,5 +1,5 @@
-use core::fmt;
 use crate::print;
+use core::fmt;
 
 const RTC_ADDRESS_PORT: u16 = 0x70;
 const RTC_DATA_PORT: u16 = 0x71;

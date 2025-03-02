@@ -114,9 +114,9 @@ impl Writer {
     }
 
     /// Sets the color used for writing subsequent characters.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `foreground` - The foreground color to use
     /// * `background` - The background color to use
     pub fn set_color(&mut self, foreground: Color, background: Color) {
@@ -210,7 +210,7 @@ impl fmt::Write for Writer {
 /// Like the `print!` macro in the standard library, but prints to the VGA text buffer.
 #[macro_export]
 macro_rules! print {
-    ($($arg:tt)*) => ($crate::kernel::vga::_print(format_args!($($arg)*)));
+    ($($arg:tt)*) => ($crate::writer::_print(format_args!($($arg)*)));
 }
 
 /// Prints the given formatted string to the VGA text buffer

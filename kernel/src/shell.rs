@@ -1,5 +1,5 @@
-use crate::kernel::string::String;
-use crate::{kernel, print};
+use crate::string::String;
+use crate::print;
 use lazy_static::lazy_static;
 use spin::Mutex;
 
@@ -39,13 +39,14 @@ pub fn key_handle(c: char) {
                 print!("Infinity OS v{}\n", env!("CARGO_PKG_VERSION"));
             }
             "uptime" => {
-                print!("{:.1} seconds\n", kernel::clock::uptime());
+                print!("{:.1} seconds\n", super::clock::uptime());
             }
             "shutdown" => {
-                kernel::acpi::shutdown();
+                //super::acpi::shutdown();
+                print!("Shutdown not available\n");
             }
             "datetime" => {
-                print!("{}\n", unsafe { kernel::clock::rtc::read_rtc() });
+                print!("{}\n", unsafe { super::clock::rtc::read_rtc() });
             }
             _ => {
                 print!("Unknown command: {}\n", stdin.as_str());
