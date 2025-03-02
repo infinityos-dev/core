@@ -29,7 +29,6 @@ static _END_MARKER: RequestsEndMarker = RequestsEndMarker::new();
 
 #[no_mangle]
 unsafe extern "C" fn kmain() -> ! {
-    serial_println!("Hello, World!");
     infinity_os::init();
 
     // All limine requests must also be referenced in a called function, otherwise they may be
