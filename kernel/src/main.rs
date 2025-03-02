@@ -3,6 +3,7 @@
 
 use core::arch::asm;
 
+use infinity_os::serial_println;
 use limine::request::{FramebufferRequest, RequestsEndMarker, RequestsStartMarker};
 use limine::BaseRevision;
 
@@ -28,6 +29,9 @@ static _END_MARKER: RequestsEndMarker = RequestsEndMarker::new();
 
 #[no_mangle]
 unsafe extern "C" fn kmain() -> ! {
+    serial_println!("Hello, World!");
+    infinity_os::init();
+
     // All limine requests must also be referenced in a called function, otherwise they may be
     // removed by the linker.
     assert!(BASE_REVISION.is_supported());
@@ -48,6 +52,7 @@ unsafe extern "C" fn kmain() -> ! {
     hcf();
 }
 
+#[cfg(not(test))]
 #[panic_handler]
 fn rust_panic(_info: &core::panic::PanicInfo) -> ! {
     hcf();

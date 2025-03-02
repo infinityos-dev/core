@@ -42,7 +42,8 @@ pub fn key_handle(c: char) {
                 print!("{:.1} seconds\n", super::clock::uptime());
             }
             "shutdown" => {
-                super::acpi::shutdown();
+                //super::acpi::shutdown();
+                print!("Shutdown not available\n");
             }
             "datetime" => {
                 print!("{}\n", unsafe { super::clock::rtc::read_rtc() });

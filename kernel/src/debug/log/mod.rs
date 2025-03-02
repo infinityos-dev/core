@@ -1,4 +1,4 @@
-use crate::vga::{Color, WRITER};
+use crate::{serial_println, writer::{Color, WRITER}};
 
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum LogLevel {
@@ -42,6 +42,8 @@ pub fn log(level: LogLevel, message: &str) {
             writeln!(writer, "{}", message).unwrap();
         }
     });
+
+    serial_println!("[{}]: {}", label, message);
 }
 
 pub fn trace(message: &str) {
