@@ -3,7 +3,6 @@
 
 use core::arch::asm;
 
-use infinity_os::serial_println;
 use limine::request::{FramebufferRequest, RequestsEndMarker, RequestsStartMarker};
 use limine::BaseRevision;
 
