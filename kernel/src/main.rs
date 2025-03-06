@@ -51,12 +51,11 @@ unsafe extern "C" fn kmain() -> ! {
                 option_to_c_void::<fn()>(None), 0, 0, 1,
                 None::<fn()>.is_some() as usize, None::<fn()>.is_some() as usize,
                 None::<fn()>.is_some() as usize);
-
-                let hello_msg = b"Hello!\0";
+                
                 flanterm::sys::flanterm_write(
-                    flanterm_ctx, 
-                    hello_msg.as_ptr() as *const i8,
-                    hello_msg.len() - 1
+                    flanterm_ctx,
+                    "Hello!".as_ptr() as *const i8,
+                    "Hello!".len()
                 );
         }
     }
