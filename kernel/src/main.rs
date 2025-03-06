@@ -2,10 +2,12 @@
 #![no_main]
 
 use core::arch::asm;
-
-use infinity_os::serial_println;
+use flanterm::sys::flanterm_context;
 use limine::request::{FramebufferRequest, RequestsEndMarker, RequestsStartMarker, BootloaderInfoRequest};
 use limine::BaseRevision;
+use infinity_os::utils::option_to_c_void;
+use core::ptr::null_mut;
+use core::ptr;
 
 #[used]
 #[unsafe(link_section = ".limine_requests_start")]
@@ -34,10 +36,28 @@ unsafe extern "C" fn kmain() -> ! {
 
     if let Some(framebuffer_response) = FRAMEBUFFER_REQUEST.get_response() {
         if let Some(framebuffer) = framebuffer_response.framebuffers().next() {
-            for i in 0..100_u64 {
-                let pixel_offset = i * framebuffer.pitch() + i * 4;
-                *(framebuffer.addr().add(pixel_offset as usize) as *mut u32) = 0xFFFFFFFF;
-            }
+
+            let flanterm_ctx: *mut flanterm::sys::flanterm_context = flanterm::sys::flanterm_fb_init(
+                None,
+                None,
+                framebuffer.addr() as *mut u32, framebuffer.width() as usize, framebuffer.height() as usize, framebuffer.pitch() as usize,
+                framebuffer.red_mask_size(), framebuffer.red_mask_shift(),
+                framebuffer.green_mask_size(), framebuffer.green_mask_shift(),
+                framebuffer.blue_mask_size(), framebuffer.blue_mask_shift(),
+                ptr::null_mut(),
+                ptr::null_mut(), ptr::null_mut(),
+                ptr::null_mut(), ptr::null_mut(),
+                ptr::null_mut(), ptr::null_mut(),
+                option_to_c_void::<fn()>(None), 0, 0, 1,
+                None::<fn()>.is_some() as usize, None::<fn()>.is_some() as usize,
+                None::<fn()>.is_some() as usize);
+
+                let hello_msg = b"Hello!\0";
+                flanterm::sys::flanterm_write(
+                    flanterm_ctx, 
+                    hello_msg.as_ptr() as *const i8,
+                    hello_msg.len() - 1
+                );
         }
     }
 

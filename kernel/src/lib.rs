@@ -21,6 +21,7 @@ pub mod layouts;
 pub mod serial;
 pub mod shell;
 pub mod string;
+pub mod utils;
 pub mod writer;
 
 pub fn init() {
@@ -30,7 +31,7 @@ pub fn init() {
     x86_64::instructions::interrupts::enable();
 
     //memory::init();
-    
+
     //acpi::init();
     //cpuid::init();
 }
