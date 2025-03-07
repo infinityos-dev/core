@@ -5,13 +5,36 @@
 
 Welcome to **InfinityOS**, an experimental operating system written in Rust. This project explores the boundaries of Rust in systems programming and serves as a platform for learning and innovation.
 
-## **Features**
-- **Rust-Powered**: Fully written in Rust, focusing on safety, performance, and modern systems programming practices.
-- **Bare Metal Development**: Runs directly on hardware, without relying on an existing operating system.
-- **Learning-Oriented**: Aimed at understanding OS architecture, low-level programming, and Rust's capabilities in systems development.
-- **Modular Design**: Designed for extensibility and future feature development.
+## **🛠️ Features**
+- ✅ Limine Framebuffer
+- ✅ Global Descriptor Table (GDT)
+- ✅ Print functions
+- ✅ Interrupts
+- ✅ Keyboard Driver
+- ✅ Memory Management
+- ✅ Shell
+- ✅ ACPI/AML Shutdown
+- ✅ CpuId Support
+- ✅ Serial Support
+- ❌ Mouse Driver
+- ❌ In-memory File System
+- ❌ Graphical Interface (GUI)
+- ❌ ELF Loader
+- ❌ Task State Segment (TSS)
+- ❌ Network Driver
+- ❌ Audio Driver
+- ❌ FAT32 Support
+- ❌ OpenGL-like API
+- ❌ Integrated Development Environment (IDE)
+- ❌ C/C++ Compiler
+- ❌ Processes
+- ❌ Multitasking
+- ❌ Installation Setup
+- ❌ Web Browser
+- ❌ User Documentation
+- ❌ Package manager
 
-## Building
+## **⚙️ Building**
 
 This project requires a nightly version of Rust because it uses some unstable features. At least nightly _2020-07-15_ is required for building. You might need to run `rustup update nightly --force` to update to the latest nightly even if some components such as `rustfmt` are missing it.
 
@@ -39,7 +62,7 @@ This creates a bootable disk image in the `target/x86_64-infinity_os/debug` dire
 
 Please file an issue if you have any problems.
 
-## Running
+## **🚀 Running**
 
 You can run the disk image in [QEMU] through:
 
@@ -59,9 +82,12 @@ dd if=target/x86_64-infinity_os/release/bootimage-infinity_os.bin of=/dev/sdX &&
 
 Where `sdX` is the device name of your USB stick. **Be careful** to choose the correct device name, because everything on that device is overwritten.
 
-## Testing
+## **🧪 Testing**
 
 >[!NOTE]
 >You will need QEMU to test properly
 
 To run the unit and integration tests, execute `cargo test`.
+
+## **🤝 Contribute**
+InfinityOS is an Open Source project, so everyone can contibute for it! You can help me starring/forking this project or help with code using pull requests (and optimize more!)
