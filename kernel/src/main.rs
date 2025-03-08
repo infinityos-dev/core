@@ -29,6 +29,8 @@ static FRAMEBUFFER_REQUEST: FramebufferRequest = FramebufferRequest::new();
 #[unsafe(link_section = ".limine_requests")]
 static INFO_REQUEST: BootloaderInfoRequest = BootloaderInfoRequest::new();
 
+static mut FLANTERM_CTX: *mut flanterm::sys::flanterm_context = ptr::null_mut();
+
 #[no_mangle]
 unsafe extern "C" fn kmain() -> ! {
     infinity_os::init();
@@ -36,7 +38,7 @@ unsafe extern "C" fn kmain() -> ! {
 
     if let Some(framebuffer_response) = FRAMEBUFFER_REQUEST.get_response() {
         if let Some(framebuffer) = framebuffer_response.framebuffers().next() {
-            let flanterm_ctx: *mut flanterm::sys::flanterm_context =
+            FLANTERM_CTX =
                 flanterm::sys::flanterm_fb_init(
                     None,
                     None,
@@ -67,7 +69,7 @@ unsafe extern "C" fn kmain() -> ! {
                 );
 
             flanterm::sys::flanterm_write(
-                flanterm_ctx,
+                FLANTERM_CTX,
                 "Hello!".as_ptr() as *const i8,
                 "Hello!".len(),
             );
