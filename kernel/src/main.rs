@@ -4,7 +4,7 @@
 use core::arch::asm;
 use core::ptr;
 use infinity_os::utils::option_to_c_void;
-use infinity_os::writer;
+use infinity_os::{print, writer};
 use limine::request::{
     BootloaderInfoRequest, FramebufferRequest, RequestsEndMarker, RequestsStartMarker,
 };
@@ -72,6 +72,8 @@ unsafe extern "C" fn kmain() -> ! {
                 "Hello!".as_ptr() as *const i8,
                 "Hello!".len(),
             );
+
+            print!("Hello, World!\n");
         }
     }
 
