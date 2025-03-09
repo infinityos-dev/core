@@ -67,12 +67,6 @@ unsafe extern "C" fn kmain() -> ! {
                     None::<fn()>.is_some() as usize,
                 ));
 
-            flanterm::sys::flanterm_write(
-                writer::FLANTERM_CTX.lock().inner(),
-                "Hello!".as_ptr() as *const i8,
-                "Hello!".len(),
-            );
-
             print!("Hello, World!\n");
         }
     }

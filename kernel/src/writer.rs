@@ -34,12 +34,13 @@ pub struct Writer {
 impl Writer {
     fn write_string(&mut self, s: &str) {
         serial_println!("{}", s);
-        if FLANTERM_CTX.lock().inner().is_null() {
-            serial_println!("FLANTERM_CTX is NULL! Printing will not work.");
-        }
-        
-        use alloc::ffi::CString;
-        unsafe { flanterm::sys::flanterm_write(FLANTERM_CTX.lock().inner(), CString::new(s).unwrap().as_ptr(), s.len()) };
+        unsafe { 
+            flanterm::sys::flanterm_write(
+                FLANTERM_CTX.lock().inner(), 
+                s.as_ptr() as *const i8,
+                s.len()
+            ) 
+        };
     }
 }
 
