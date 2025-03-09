@@ -25,6 +25,7 @@ pub mod utils;
 pub mod writer;
 
 pub fn init() {
+    print!("Initializing...\n");
     gdt::init();
     interrupts::init_idt();
     unsafe { interrupts::PICS.lock().initialize() };
@@ -34,6 +35,7 @@ pub fn init() {
 
     //acpi::init();
     //cpuid::init();
+    print!("Initialized\n");
 }
 
 pub trait Testable {

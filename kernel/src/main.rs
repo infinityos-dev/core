@@ -32,7 +32,6 @@ static INFO_REQUEST: BootloaderInfoRequest = BootloaderInfoRequest::new();
 
 #[no_mangle]
 unsafe extern "C" fn kmain() -> ! {
-    infinity_os::init();
     assert!(BASE_REVISION.is_supported());
 
     if let Some(framebuffer_response) = FRAMEBUFFER_REQUEST.get_response() {
@@ -70,6 +69,8 @@ unsafe extern "C" fn kmain() -> ! {
             print!("Hello, World!\n");
         }
     }
+
+    infinity_os::init();
 
     hcf();
 }
