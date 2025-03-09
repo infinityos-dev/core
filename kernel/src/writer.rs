@@ -1,13 +1,29 @@
 use core::fmt;
+use core::ptr;
 use lazy_static::lazy_static;
 use spin::Mutex;
 use volatile::Volatile;
 use x86_64::instructions::port::Port;
 
+#[allow(dead_code)]
+pub struct FlantermContextWrapper(*mut flanterm::sys::flanterm_context);
+
+impl FlantermContextWrapper {
+    pub fn new(context: *mut flanterm::sys::flanterm_context) -> Self {
+        FlantermContextWrapper(context)
+    }
+
+    pub fn inner(&self) -> *mut flanterm::sys::flanterm_context {
+        self.0
+    }
+}
+
+unsafe impl Send for FlantermContextWrapper {}
+unsafe impl Sync for FlantermContextWrapper {}
+
 lazy_static! {
-    /// A global `Writer` instance that can be used for printing to the VGA text buffer.
-    ///
-    /// Used by the `print!` and `println!` macros.
+    pub static ref FLANTERM_CTX: Mutex<FlantermContextWrapper> =
+        Mutex::new(FlantermContextWrapper(ptr::null_mut()));
     pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
         column_position: 0,
         color_code: ColorCode::new(Color::White, Color::Black),
