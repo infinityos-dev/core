@@ -4,7 +4,7 @@
 use core::arch::asm;
 use core::ptr;
 use infinity_os::utils::option_to_c_void;
-use infinity_os::{print, writer};
+use infinity_os::{print, shell, writer};
 use limine::request::{
     BootloaderInfoRequest, FramebufferRequest, RequestsEndMarker, RequestsStartMarker,
 };
@@ -66,11 +66,14 @@ unsafe extern "C" fn kmain() -> ! {
                     None::<fn()>.is_some() as usize,
                 ));
 
-            print!("Hello, World!\n");
+            
         }
     }
 
     infinity_os::init();
+
+    shell::print_banner();
+    shell::print_prompt();
 
     hcf();
 }

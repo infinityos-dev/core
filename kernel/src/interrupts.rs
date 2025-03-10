@@ -47,6 +47,7 @@ lazy_static! {
 }
 pub fn init_idt() {
     IDT.load();
+    print!("IDT Initialized\n");
 }
 
 extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
@@ -114,4 +115,5 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
     }
+    print!("a");
 }

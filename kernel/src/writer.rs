@@ -33,7 +33,6 @@ pub struct Writer {
 
 impl Writer {
     fn write_string(&mut self, s: &str) {
-        serial_println!("{}", s);
         unsafe { 
             flanterm::sys::flanterm_write(
                 FLANTERM_CTX.lock().inner(), 
