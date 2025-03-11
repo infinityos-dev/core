@@ -8,6 +8,7 @@
 extern crate alloc;
 
 use core::panic::PanicInfo;
+use log::*;
 
 //pub mod acpi;
 pub mod allocator;
@@ -17,6 +18,7 @@ pub mod debug;
 pub mod gdt;
 pub mod interrupts;
 pub mod layouts;
+pub mod log;
 //pub mod memory;
 pub mod serial;
 pub mod shell;
@@ -25,17 +27,15 @@ pub mod utils;
 pub mod writer;
 
 pub fn init() {
-    print!("Initializing...\n");
+    info("Initializing...\n");
     gdt::init();
-    interrupts::init_idt();
-    unsafe { interrupts::PICS.lock().initialize() };
-    x86_64::instructions::interrupts::enable();
+    interrupts::init();
 
     //memory::init();
 
     //acpi::init();
     //cpuid::init();
-    print!("Initialized\n");
+    info("Initialized\n");
 }
 
 pub trait Testable {

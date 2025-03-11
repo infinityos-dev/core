@@ -4,7 +4,7 @@
 use core::arch::asm;
 use core::ptr;
 use infinity_os::utils::option_to_c_void;
-use infinity_os::{print, shell, writer};
+use infinity_os::{shell, writer};
 use limine::request::{
     BootloaderInfoRequest, FramebufferRequest, RequestsEndMarker, RequestsStartMarker,
 };
@@ -81,6 +81,9 @@ unsafe extern "C" fn kmain() -> ! {
 #[cfg(not(test))]
 #[panic_handler]
 fn rust_panic(_info: &core::panic::PanicInfo) -> ! {
+    use infinity_os::print;
+
+    print!("\x1b[97;41m{}", _info);
     hcf();
 }
 

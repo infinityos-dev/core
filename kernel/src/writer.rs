@@ -1,9 +1,8 @@
+use crate::serial_print;
 use core::fmt;
 use core::ptr;
 use lazy_static::lazy_static;
 use spin::Mutex;
-
-use crate::serial_println;
 
 #[allow(dead_code)]
 pub struct FlantermContextWrapper(*mut flanterm::sys::flanterm_context);
@@ -24,21 +23,21 @@ unsafe impl Sync for FlantermContextWrapper {}
 lazy_static! {
     pub static ref FLANTERM_CTX: Mutex<FlantermContextWrapper> =
         Mutex::new(FlantermContextWrapper(ptr::null_mut()));
-    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {
-    });
+    pub static ref WRITER: Mutex<Writer> = Mutex::new(Writer {});
 }
 
-pub struct Writer {
-}
+pub struct Writer {}
 
 impl Writer {
     fn write_string(&mut self, s: &str) {
-        unsafe { 
+        serial_print!("{}", s);
+
+        unsafe {
             flanterm::sys::flanterm_write(
-                FLANTERM_CTX.lock().inner(), 
+                FLANTERM_CTX.lock().inner(),
                 s.as_ptr() as *const i8,
-                s.len()
-            ) 
+                s.len(),
+            )
         };
     }
 }

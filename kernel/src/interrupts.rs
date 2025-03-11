@@ -6,6 +6,7 @@ use pic8259::ChainedPics;
 use spin;
 use x86_64::structures::idt::PageFaultErrorCode;
 use x86_64::structures::idt::{InterruptDescriptorTable, InterruptStackFrame};
+use crate::log::*;
 
 pub const PIC_1_OFFSET: u8 = 32;
 pub const PIC_2_OFFSET: u8 = PIC_1_OFFSET + 8;
@@ -45,9 +46,13 @@ lazy_static! {
         idt
     };
 }
-pub fn init_idt() {
+pub fn init() {
     IDT.load();
-    print!("IDT Initialized\n");
+    trace("IDT Initialized\n");
+    unsafe { PICS.lock().initialize() };
+    trace("PIC Initialized\n");
+    x86_64::instructions::interrupts::enable();
+    trace("Enabled interrupts\n");
 }
 
 extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
@@ -115,5 +120,4 @@ extern "x86-interrupt" fn keyboard_interrupt_handler(_stack_frame: InterruptStac
         PICS.lock()
             .notify_end_of_interrupt(InterruptIndex::Keyboard.as_u8());
     }
-    print!("a");
 }

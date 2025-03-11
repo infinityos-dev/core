@@ -49,4 +49,6 @@ pub fn init() {
         CS::set_reg(GDT.1.code_selector);
         load_tss(GDT.1.tss_selector);
     }
+    
+    crate::log::trace("GDT Initialized\n");
 }
