@@ -44,6 +44,9 @@ pub fn key_handle(c: char) {
             "shutdown" => {
                 kernel::acpi::shutdown();
             }
+            "poweroff" => {
+                kernel::acpi::shutdown();
+            }
             "datetime" => {
                 print!("{}\n", unsafe { kernel::clock::rtc::read_rtc() });
             }

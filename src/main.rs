@@ -20,15 +20,6 @@ entry_point!(kernel_main);
 
 pub fn kernel_main(boot_info: &'static BootInfo) -> ! {
     infinity_os::init(boot_info);
-
-    log(LogLevel::Trace, "This is a trace message");
-    log(LogLevel::Debug, "This is a debug message");
-    log(LogLevel::Info, "System initialization complete");
-    log(LogLevel::Warn, "Low memory warning");
-    log(LogLevel::Error, "Failed to load driver");
-    log(LogLevel::Fatal, "Critical system error");
-    log(LogLevel::Panic, "Kernel panic!");
-
     shell::print_banner();
     shell::print_prompt();
     infinity_os::hlt_loop();
